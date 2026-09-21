@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "dotenv/config";
 import { readFile } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
 
@@ -12,7 +13,11 @@ function value(node: XmlNode, key: string): string {
 }
 function list(value: unknown): XmlNode[] { return Array.isArray(value) ? value.filter((item): item is XmlNode => typeof item === "object" && item !== null) : typeof value === "object" && value !== null ? [value as XmlNode] : []; }
 function parseArgs(argv: string[]): Args {
-  const args: Args = { baseUrl: "http://127.0.0.1:32400", credentialFile: "/home/jim/.config/openclaw/plex-token", timezone: "America/New_York" };
+  const args: Args = {
+    baseUrl: process.env.PLEX_BASE_URL?.trim() || "http://127.0.0.1:32400",
+    credentialFile: process.env.PLEX_CREDENTIAL_FILE?.trim() || "",
+    timezone: process.env.PLEX_TIMEZONE?.trim() || "America/New_York",
+  };
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index], argument = argv[index + 1];
     if (!argument || !["--date", "--base-url", "--credential-file", "--timezone"].includes(flag)) throw new Error("Usage: plex-schedule [--date YYYY-MM-DD] [--base-url URL] [--credential-file PATH] [--timezone IANA]");
@@ -21,6 +26,7 @@ function parseArgs(argv: string[]): Args {
     if (flag === "--credential-file") args.credentialFile = argument;
     if (flag === "--timezone") args.timezone = argument;
   }
+  if (!args.credentialFile) throw new Error("PLEX_CREDENTIAL_FILE must be set in .env or the environment");
   return args;
 }
 function localDate(date: Date, timezone: string): string {
