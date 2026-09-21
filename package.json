@@ -1,0 +1,17 @@
+{
+  "name": "plex-daily-summary",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "summary": "node dist/plex-schedule.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.3"
+  }
+}
